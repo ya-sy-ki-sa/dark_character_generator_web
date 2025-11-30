@@ -431,9 +431,19 @@ function App() {
 
       <footer className="app-footer">
         <span className="footer-note">このアプリではオープンソースライブラリを利用しています。</span>
-        <button className="footer-link" type="button" onClick={() => setIsLicenseOpen(true)}>
-          ライセンス情報を表示
-        </button>
+        <div className="footer-actions">
+          <button className="footer-link" type="button" onClick={() => setIsLicenseOpen(true)}>
+            ライセンス情報を表示
+          </button>
+          <a
+            className="footer-link"
+            href="https://github.com/ya-sy-ki-sa/dark_character_generator_web"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub リポジトリ
+          </a>
+        </div>
       </footer>
     </main>
   );
