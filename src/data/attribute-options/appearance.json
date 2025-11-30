@@ -1,0 +1,127 @@
+[
+  {
+    "category": "APPEARANCE",
+    "name": "白髪化",
+    "description": "白髪化：髪色が一夜にして白く染まる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "黒肌化・褐色肌化",
+    "description": "黒肌化：肌が闇色に変化する"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "闇の衣装化",
+    "description": "闇の衣装：黒革や儀礼装が身を包む"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "敵勢力衣装化",
+    "description": "敵勢力衣装：敵の象徴をまとい忠誠を示す"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "身体紋様",
+    "description": "身体紋様：タトゥーや契印が浮かび上がる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "闇のオーラ",
+    "description": "闇のオーラ：瘴気や黒炎が立ち昇る"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "眼の変化",
+    "description": "眼の変化：虹彩や瞳孔が異形になる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "牙・爪の顕在化",
+    "description": "牙・爪：凶悪な武器が肉体から生える"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "角・翼・尾",
+    "description": "角・翼・尾：異形のパーツが生える"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "甲冑の黒鋼化",
+    "description": "甲冑の黒鋼化：装甲が黒く棘を帯びる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "鎖・枷・檻モチーフ",
+    "description": "鎖・枷：拘束を象徴する装飾を纏う"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "反転配色",
+    "description": "反転配色：元の衣装が反転した色になる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "血色の消失",
+    "description": "血色の消失：死人めいた肌艶になる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "黒い涙",
+    "description": "黒い涙：涙が黒く染まって流れる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "仮面・フード",
+    "description": "仮面・フード：素顔を隠し象徴性を強める"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "機械義肢・露出配線",
+    "description": "機械義肢：機械化の痕跡が露わになる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "結晶化・黒曜化",
+    "description": "結晶化：皮膚や武具が黒晶で覆われる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "紋章の反転・亀裂・汚損",
+    "description": "紋章の反転：かつての紋章が穢れてゆく"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "有機鎧",
+    "description": "有機鎧：生体装甲が脈動し目を開く"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "影の分身・影の延長",
+    "description": "影の分身：影が肥大化し意思を持つ"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "破れたマント・ほつれ",
+    "description": "破れたマント：かつての栄光が朽ちる"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "漂う微粒子・灰・羽根",
+    "description": "漂う微粒子：灰や羽根が常に舞う"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "低温演出または黒炎の熱歪み",
+    "description": "温度演出：白い息か黒炎が周囲を揺らす"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "時計・歯車・鎖の小物",
+    "description": "時計・歯車：時間や拘束を象徴する小物"
+  },
+  {
+    "category": "APPEARANCE",
+    "name": "浮遊・黒円陣",
+    "description": "浮遊・黒円陣：足元に魔法陣が浮かぶ"
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "category": "MOTIVE",
+    "name": "復讐心",
+    "description": "復讐心：過去の敵への報復が闇堕ちを駆動する"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "嫉妬",
+    "description": "嫉妬：他者への羨望が破滅の衝動へ変わる"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "劣等感",
+    "description": "劣等感：劣等感が力への執着に転化する"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "愛する人の喪失",
+    "description": "愛する人の喪失：喪失の悲しみが闇を呼ぶ"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "野心",
+    "description": "野心：どんな犠牲もいとわない出世欲"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "理想の崩壊",
+    "description": "理想の崩壊：信じた正義が砕け散った衝撃"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "絶望",
+    "description": "絶望：希望を失った心が闇へ沈む"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "裏切り体験",
+    "description": "裏切り体験：信頼が踏みにじられた怒り"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "支配欲",
+    "description": "支配欲：すべてを掌握したい欲望"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "嗜虐欲",
+    "description": "嗜虐欲：他者を苦しめる快楽に溺れる"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "力への渇望",
+    "description": "力への渇望：強大な力を求める飢え"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "闇の快楽への耽溺",
+    "description": "闇の快楽：禁じられた愉悦に囚われる"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "先天的素因",
+    "description": "先天的素因：生まれつき闇に親和的"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "正義の過激化",
+    "description": "正義の過激化：義憤が過激に歪む"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "孤独・疎外感",
+    "description": "孤独・疎外感：世界から弾かれた孤独"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "屈辱体験・名誉の失墜",
+    "description": "屈辱体験：誇りを踏みにじられた屈辱"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "自己嫌悪からの反転",
+    "description": "自己嫌悪：自分を嫌う心が悪に傾く"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "禁断知識への飢え",
+    "description": "禁断知識：知識欲が禁忌を破らせる"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "救済願望のねじれ",
+    "description": "救済願望：誰かを救うため悪に堕ちる"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "保護欲の暴走",
+    "description": "保護欲の暴走：守るために独占し支配する"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "羨望からの同一化欲求",
+    "description": "同一化欲求：憧れを超えるため闇に染まる"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "予言・運命への拘束感",
+    "description": "運命の拘束：予言に縛られ抗うために堕ちる"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "生存圧・貧困・弱者復讐の念",
+    "description": "生存圧：過酷な環境が悪意を育てる"
+  },
+  {
+    "category": "MOTIVE",
+    "name": "体制腐敗への反発",
+    "description": "体制腐敗：腐敗を壊すため破壊者になる"
+  }
+]

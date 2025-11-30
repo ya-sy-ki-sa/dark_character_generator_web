@@ -1,0 +1,72 @@
+[
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "勇敢な行動者",
+    "description": "恐怖や危険を前にしても立ち向かう決断力と行動力"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "守護者の本能",
+    "description": "他者を守るために自己犠牲をいとわない防衛的精神"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "冷静な分析者",
+    "description": "感情に流されずに状況を見極め、合理的な判断を下す性質"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "戦略的思考者",
+    "description": "全体を俯瞰し、目的達成のために最適な手段を組み立てる知性"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "理想追求者",
+    "description": "正義・平和・美などの理想を信じ、実現のために行動する純粋さ"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "信念の実践者",
+    "description": "自らの信条を曲げず、たとえ孤立しても貫く強さ"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "高潔な精神保持者",
+    "description": "名誉・誇り・道徳を重視し、正しい行いを模索する真摯さ"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "知識探求者",
+    "description": "知的好奇心が強く、学びや研究に没頭する傾向"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "創造的表現者",
+    "description": "感情や思想を作品・行動・言葉で表す芸術的衝動"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "情熱的信奉者",
+    "description": "自身の理念・対象・芸術・人物などに強い情熱を燃やす姿勢"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "孤高の求道者",
+    "description": "他者に頼らず、自らの力や道を極めようとする独立性"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "静寂の観察者",
+    "description": "他者との距離を保ち、世界を冷静に見つめる内省的性格"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "慈愛の癒やし手",
+    "description": "他者の痛みや苦しみに寄り添い、救済をもたらす優しさ"
+  },
+  {
+    "category": "CHARACTER_TRAIT",
+    "name": "無垢なる善意者",
+    "description": "打算のない純粋な善意で人に接する清らかさ"
+  }
+]

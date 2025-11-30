@@ -1,0 +1,122 @@
+[
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "洗脳",
+    "description": "洗脳：徹底的な刷り込みで価値観を塗り替える"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "誘惑・籠絡",
+    "description": "誘惑・籠絡：甘い誘いに心を奪われる"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "乗っ取り",
+    "description": "乗っ取り：身体や精神を他者に支配される"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "憑依",
+    "description": "憑依：異質な存在が内側から支配する"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "人格変更",
+    "description": "人格変更：別人格が主導権を握る"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "記憶・認識・信念の改変",
+    "description": "記憶改変：過去が書き換えられ己を見失う"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "肉体改造・強化改造",
+    "description": "肉体改造：禁断の改造で肉体が変質する"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "寄生",
+    "description": "寄生：闇の存在が共生し侵食する"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "屍化・ゾンビ化",
+    "description": "屍化：死を超えた異形へ変貌する"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "悪への覚醒",
+    "description": "悪への覚醒：眠っていた闇が目覚める"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "悪への陶酔",
+    "description": "悪への陶酔：邪悪な行為に快感を覚える"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "穢れ・汚染",
+    "description": "穢れ・汚染：闇の瘴気がゆっくりと染み込む"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "歴史改変",
+    "description": "歴史改変：過去を変えた結果として闇に落ちる"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "闇との契約",
+    "description": "闇との契約：代償と引き換えに力を得る"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "呪詛・呪縛",
+    "description": "呪詛・呪縛：呪いに囚われ意思を奪われる"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "儀式・契印／血盟・供犠",
+    "description": "儀式：血の契約が人格を塗り替える"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "禁術・禁薬・投与",
+    "description": "禁術：禁忌の術や薬物が精神を蝕む"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "精神拷問・感覚剥奪",
+    "description": "精神拷問：心を折る拷問で闇が芽生える"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "同化・融合",
+    "description": "同化・融合：集合意識へ吸収される"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "自己分裂・スイッチ",
+    "description": "自己分裂：人格が分裂し闇側が台頭する"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "機械化・サイボーグ化",
+    "description": "機械化：身体が機械になり感情が削られる"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "タイムループ疲弊",
+    "description": "タイムループ疲弊：繰り返しに疲弊し理性を失う"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "契約アイテム依存",
+    "description": "契約アイテム：呪具に操られ闇へ沈む"
+  },
+  {
+    "category": "TRANSFORMATION_PROCESS",
+    "name": "取引",
+    "description": "取引：願いと引き換えに闇の代償を払う"
+  }
+]

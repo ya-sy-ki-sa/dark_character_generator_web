@@ -1,0 +1,97 @@
+[
+  {
+    "category": "MINDSET",
+    "name": "快楽主義・残虐性",
+    "description": "快楽主義：残虐な行為に悦びを覚える"
+  },
+  {
+    "category": "MINDSET",
+    "name": "狂気",
+    "description": "狂気：理性を失い予測不能になる"
+  },
+  {
+    "category": "MINDSET",
+    "name": "感情の喪失",
+    "description": "感情の喪失：冷淡で無感動な存在となる"
+  },
+  {
+    "category": "MINDSET",
+    "name": "操り人形化",
+    "description": "操り人形化：自我を捨てて命令に従う"
+  },
+  {
+    "category": "MINDSET",
+    "name": "傲慢",
+    "description": "傲慢：自らを絶対視し他者を見下す"
+  },
+  {
+    "category": "MINDSET",
+    "name": "見下し",
+    "description": "見下し：世界全体を嘲笑する態度"
+  },
+  {
+    "category": "MINDSET",
+    "name": "全能感",
+    "description": "全能感：無限の力を得たと信じる"
+  },
+  {
+    "category": "MINDSET",
+    "name": "冷酷な合理主義",
+    "description": "冷酷な合理主義：結果のために一切の情を排除する"
+  },
+  {
+    "category": "MINDSET",
+    "name": "虚無主義",
+    "description": "虚無主義：すべてに意味を見いだせなくなる"
+  },
+  {
+    "category": "MINDSET",
+    "name": "選民思想・優越主義",
+    "description": "選民思想：自分だけが選ばれたと信じる"
+  },
+  {
+    "category": "MINDSET",
+    "name": "執着・依存",
+    "description": "執着・依存：対象に過剰に固執する"
+  },
+  {
+    "category": "MINDSET",
+    "name": "反道徳・反体制への快感",
+    "description": "反道徳：禁忌を破ることに快感を覚える"
+  },
+  {
+    "category": "MINDSET",
+    "name": "目的のための手段の全面正当化",
+    "description": "手段の正当化：目的のためなら全てを許す"
+  },
+  {
+    "category": "MINDSET",
+    "name": "罪悪感の消失",
+    "description": "罪悪感の消失：罪を感じず笑っていられる"
+  },
+  {
+    "category": "MINDSET",
+    "name": "皮肉・冷笑",
+    "description": "皮肉・冷笑：刺すような言葉で全てを嘲る"
+  },
+  {
+    "category": "MINDSET",
+    "name": "規範破壊による解放感",
+    "description": "規範破壊：常識を壊すことに解放を感じる"
+  },
+  {
+    "category": "MINDSET",
+    "name": "運命論的諦念",
+    "description": "運命論的諦念：流れに身を任せ希望を捨てる"
+  },
+  {
+    "category": "MINDSET",
+    "name": "過剰な独占欲・束縛性",
+    "description": "独占欲：対象を離さない執着を見せる"
+  },
+  {
+    "category": "MINDSET",
+    "name": "沈黙・寡言化",
+    "description": "沈黙：言葉を失い表情も凍てつく"
+  }
+]
