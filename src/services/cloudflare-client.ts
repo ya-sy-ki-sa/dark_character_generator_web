@@ -70,7 +70,8 @@ const extractContent = (data: CloudflareResponse): string | undefined => {
 
 export const callCloudflareAI = async (
   prompt: string,
-  _providerConfig?: ProviderConfig
+  _providerConfig?: ProviderConfig,
+  turnstileToken?: string
 ): Promise<string> => {
   const response = await fetch("/api/ai", {
     method: "POST",
@@ -79,6 +80,7 @@ export const callCloudflareAI = async (
     },
     body: JSON.stringify({
       prompt,
+      turnstileToken,
     }),
   });
 

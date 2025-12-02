@@ -1,6 +1,7 @@
 export interface Env {
   CLOUDFLARE_ACCOUNT_ID: string;
   CLOUDFLARE_API_TOKEN: string;
+  TURNSTILE_SECRET_KEY: string;
 }
 
 const CLOUD_FLARE_MODEL = '@cf/openai/gpt-oss-20b';
@@ -15,10 +16,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
 
   let prompt = '';
+  let turnstileToken = '';
   try {
     const body = await request.json();
     if (body && typeof body.prompt === 'string') {
       prompt = body.prompt;
+    }
+    if (body && typeof body.turnstileToken === 'string') {
+      turnstileToken = body.turnstileToken;
     }
   } catch (error) {
     console.error('Failed to parse request body', error);
@@ -27,6 +32,33 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   if (!prompt.trim()) {
     return buildErrorResponse('Prompt is required.', 400);
+  }
+
+  const turnstileSecret = env.TURNSTILE_SECRET_KEY?.trim();
+  if (!turnstileSecret) {
+    console.error('TURNSTILE_SECRET_KEY is missing.');
+    return buildErrorResponse('Turnstile secret key is not configured.');
+  }
+
+  if (!turnstileToken) {
+    return buildErrorResponse('Turnstile token is required.', 400);
+  }
+
+  const verification = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    body: new URLSearchParams({
+      secret: turnstileSecret,
+      response: turnstileToken,
+      remoteip: request.headers.get('CF-Connecting-IP') ?? '',
+    }),
+  });
+
+  type TurnstileVerifyResult = { success: boolean; 'error-codes'?: unknown };
+  const verificationResult: TurnstileVerifyResult = await verification.json().catch(() => ({ success: false }));
+
+  if (!verificationResult.success) {
+    console.error('Turnstile verification failed.', verificationResult['error-codes']);
+    return buildErrorResponse('Failed bot verification.', 403);
   }
 
   const accountId = env.CLOUDFLARE_ACCOUNT_ID?.trim();

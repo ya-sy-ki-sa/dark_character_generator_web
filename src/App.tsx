@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import {
   ALIGNMENTS,
@@ -29,6 +29,14 @@ import {
   InputMode,
 } from './types';
 
+type TurnstileWidget = {
+  render: (element: HTMLElement, options: Record<string, unknown>) => string;
+  execute?: (widgetId: string) => void;
+  reset?: (widgetId: string) => void;
+};
+
+type TurnstileWindow = typeof window & { turnstile?: TurnstileWidget };
+
 function formatPreset(preset: DarknessPreset) {
   return `${preset.value}%（${preset.label}）`;
 }
@@ -51,6 +59,8 @@ function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLicenseOpen, setIsLicenseOpen] = useState(false);
   const [isUsageInfoOpen, setIsUsageInfoOpen] = useState(false);
+  const [isVerifyingTurnstile, setIsVerifyingTurnstile] = useState(false);
+  const [turnstileError, setTurnstileError] = useState('');
   const {
     providerConfig,
     persistSetting,
@@ -64,6 +74,52 @@ function App() {
     () => DARKNESS_PRESETS.find((preset) => preset.value === darknessPresetValue) ?? DARKNESS_PRESETS[0],
     [darknessPresetValue]
   );
+
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim();
+  const turnstileWidgetRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetId = useRef<string | null>(null);
+  const turnstileResolve = useRef<((token: string) => void) | null>(null);
+  const turnstileReject = useRef<((reason?: unknown) => void) | null>(null);
+
+  useEffect(() => {
+    if (!turnstileSiteKey) return;
+    if (document.querySelector('script[data-turnstile-script]')) return;
+
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    script.defer = true;
+    script.dataset.turnstileScript = 'true';
+    script.onload = () => {
+      const turnstile = (window as TurnstileWindow).turnstile;
+      if (!turnstile || !turnstileWidgetRef.current) return;
+      turnstileWidgetId.current = turnstile.render(turnstileWidgetRef.current, {
+        sitekey: turnstileSiteKey,
+        size: 'invisible',
+        callback: (token: string) => {
+          turnstileResolve.current?.(token);
+          turnstileResolve.current = null;
+          turnstileReject.current = null;
+        },
+        'error-callback': () => {
+          turnstileReject.current?.(new Error('Turnstile verification failed.'));
+          turnstileResolve.current = null;
+          turnstileReject.current = null;
+        },
+        'expired-callback': () => {
+          turnstileReject.current?.(new Error('Turnstile token expired.'));
+          turnstileResolve.current = null;
+          turnstileReject.current = null;
+        },
+      });
+    };
+
+    document.body.appendChild(script);
+
+    return () => {
+      script.remove();
+    };
+  }, [turnstileSiteKey]);
 
   const protagonistAlignment = useMemo(
     () => ALIGNMENTS.find((item) => item.score === protagonistScore),
@@ -102,6 +158,28 @@ function App() {
     setTraitMemo('');
   };
 
+  const requestTurnstileToken = async (): Promise<string> => {
+    if (!turnstileSiteKey) {
+      throw new Error('Turnstileのサイトキーが設定されていません。');
+    }
+
+    const turnstile = (window as TurnstileWindow).turnstile;
+    if (!turnstile || !turnstileWidgetId.current) {
+      throw new Error('Turnstileの初期化が完了していません。少し待ってから再度お試しください。');
+    }
+
+    return new Promise<string>((resolve, reject) => {
+      turnstileResolve.current = resolve;
+      turnstileReject.current = reject;
+      try {
+        turnstile.reset?.(turnstileWidgetId.current!);
+        turnstile.execute?.(turnstileWidgetId.current!);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+
   const handleGenerate = async () => {
     const validationError = validate();
     if (validationError) {
@@ -111,6 +189,7 @@ function App() {
 
     setError('');
     setInfo('');
+    setTurnstileError('');
     setIsGenerating(true);
 
     const traitSelections = TRAIT_OPTIONS.filter((trait) => selectedTraits.includes(trait.name));
@@ -134,7 +213,14 @@ function App() {
     };
 
     try {
-      const result = await generateCharacter(input, providerConfig);
+      let turnstileToken: string | undefined;
+      if (providerConfig.providerType === 'DEMO') {
+        setIsVerifyingTurnstile(true);
+        turnstileToken = await requestTurnstileToken();
+        setIsVerifyingTurnstile(false);
+      }
+
+      const result = await generateCharacter(input, providerConfig, turnstileToken);
       setResponse(result);
       setIsResultOpen(true);
       if (result.warning) {
@@ -142,8 +228,12 @@ function App() {
       }
     } catch (generationError) {
       console.error(generationError);
+      if (providerConfig.providerType === 'DEMO') {
+        setTurnstileError('Bot判定に失敗しました。ページを再読み込みして再試行してください。');
+      }
       setError('生成中に問題が発生しました。再度お試しください。');
     } finally {
+      setIsVerifyingTurnstile(false);
       setIsGenerating(false);
     }
   };
@@ -370,13 +460,14 @@ function App() {
 
       <section className="actions">
         {error && <div className="toast error">{error}</div>}
+        {turnstileError && <div className="toast error">{turnstileError}</div>}
         {info && <div className="toast info">{info}</div>}
         <div className="status-line">
           <span>選択済みカテゴリ: {totalSelections} 件</span>
           <span>闇堕ち度プリセット: {formatPreset(currentPreset)}</span>
         </div>
-        <button className="primary" type="button" onClick={handleGenerate} disabled={isGenerating}>
-          {isGenerating ? '生成中...' : '闇堕ち設定を生成する'}
+        <button className="primary" type="button" onClick={handleGenerate} disabled={isGenerating || isVerifyingTurnstile}>
+          {isGenerating || isVerifyingTurnstile ? '生成中...' : '闇堕ち設定を生成する'}
         </button>
       </section>
 
@@ -404,6 +495,8 @@ function App() {
           <p className="placeholder">設定を入力して「生成」ボタンを押すと、ここに最新結果の要約が表示されます。</p>
         )}
       </section>
+
+      <div ref={turnstileWidgetRef} style={{ display: 'none' }} />
 
       {isSettingsOpen && (
         <ProviderSettingsModal
