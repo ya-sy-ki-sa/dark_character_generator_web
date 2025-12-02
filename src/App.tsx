@@ -15,6 +15,7 @@ import {
 } from './constants';
 import { PromptModal } from './components/PromptModal';
 import { LicenseModal } from './components/LicenseModal';
+import { UsageInfoModal } from './components/UsageInfoModal';
 import { ProviderSettingsModal } from './components/ProviderSettingsModal';
 import { ResultModal } from './components/ResultModal';
 import { useProviderSettings } from './hooks/useProviderSettings';
@@ -49,6 +50,7 @@ function App() {
   const [isPromptOpen, setIsPromptOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLicenseOpen, setIsLicenseOpen] = useState(false);
+  const [isUsageInfoOpen, setIsUsageInfoOpen] = useState(false);
   const {
     providerConfig,
     persistSetting,
@@ -429,9 +431,14 @@ function App() {
 
       {isLicenseOpen && <LicenseModal onClose={() => setIsLicenseOpen(false)} />}
 
+      {isUsageInfoOpen && <UsageInfoModal onClose={() => setIsUsageInfoOpen(false)} />}
+
       <footer className="app-footer">
         <span className="footer-note">このアプリではオープンソースライブラリを利用しています。</span>
         <div className="footer-actions">
+          <button className="footer-link" type="button" onClick={() => setIsUsageInfoOpen(true)}>
+            本サイトのご利用について
+          </button>
           <button className="footer-link" type="button" onClick={() => setIsLicenseOpen(true)}>
             ライセンス情報を表示
           </button>
