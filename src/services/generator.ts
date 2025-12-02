@@ -225,7 +225,8 @@ const buildNarrative = (input: CharacterInput): string => {
 
 export const generateCharacter = async (
   input: CharacterInput,
-  providerConfig: ProviderConfig
+  providerConfig: ProviderConfig,
+  turnstileToken?: string
 ): Promise<GenerationResponse> => {
   const prompt = buildPrompt(input);
   const demoWarning =
@@ -252,7 +253,7 @@ export const generateCharacter = async (
     }
   } else if (providerConfig.providerType === "DEMO") {
     try {
-      narrative = await callCloudflareAI(prompt, providerConfig);
+      narrative = await callCloudflareAI(prompt, providerConfig, turnstileToken);
       usedProvider = true;
     } catch (error) {
       warning = demoWarning;
