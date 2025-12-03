@@ -80,6 +80,8 @@ function App() {
   const turnstileWidgetId = useRef<string | null>(null);
   const turnstileResolve = useRef<((token: string) => void) | null>(null);
   const turnstileReject = useRef<((reason?: unknown) => void) | null>(null);
+  const isTurnstileExecuting = useRef(false);
+  const turnstilePendingPromise = useRef<Promise<string> | null>(null);
 
   useEffect(() => {
     if (!turnstileSiteKey) return;
@@ -168,16 +170,36 @@ function App() {
       throw new Error('Turnstileの初期化が完了していません。少し待ってから再度お試しください。');
     }
 
-    return new Promise<string>((resolve, reject) => {
-      turnstileResolve.current = resolve;
-      turnstileReject.current = reject;
+    if (turnstilePendingPromise.current) {
+      return turnstilePendingPromise.current;
+    }
+
+    const promise = new Promise<string>((resolve, reject) => {
+      turnstileResolve.current = (token) => {
+        isTurnstileExecuting.current = false;
+        turnstilePendingPromise.current = null;
+        resolve(token);
+      };
+
+      turnstileReject.current = (reason) => {
+        isTurnstileExecuting.current = false;
+        turnstilePendingPromise.current = null;
+        reject(reason);
+      };
+
       try {
+        isTurnstileExecuting.current = true;
         turnstile.reset?.(turnstileWidgetId.current!);
         turnstile.execute?.(turnstileWidgetId.current!);
       } catch (error) {
+        isTurnstileExecuting.current = false;
+        turnstilePendingPromise.current = null;
         reject(error);
       }
     });
+
+    turnstilePendingPromise.current = promise;
+    return promise;
   };
 
   const handleGenerate = async () => {
