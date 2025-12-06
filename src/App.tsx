@@ -284,7 +284,7 @@ function App() {
           <p className="eyebrow">Dark Character Generator</p>
           <h1>闇堕ちキャラクタージェネレーター</h1>
           <p className="lede">
-            ブラウザで闇堕ち設定を組み立て、生成AIを利用して闇堕ちキャラクターを作成。生成時のAI プロンプトも確認できます。
+            ブラウザで闇堕ち設定を組み立て、生成AIを利用して闇堕ちキャラクターを作成。生成時のプロンプトも確認できます。
           </p>
           <div className="hero-actions">
             <button className="ghost" type="button" onClick={() => setIsSettingsOpen(true)}>
