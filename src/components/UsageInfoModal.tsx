@@ -16,7 +16,7 @@ export function UsageInfoModal({ onClose }: UsageInfoModalProps) {
       <section>
         <h3 className="subheading">概要</h3>
         <p>
-          本サイトでは、ユーザーが指定した設定やキーワードをもとに、AI が闇堕ちキャラクターのプロンプトや概要を生成します。
+          本サイトでは、ユーザーが指定した設定やキーワードをもとに、AI が闇堕ちキャラクターのプロットを生成します。
           プロンプトの表示や結果モーダルから内容をコピーして、個人の創作やアイデア出しに活用いただけます。
         </p>
       </section>
