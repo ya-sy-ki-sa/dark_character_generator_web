@@ -1,6 +1,6 @@
 # Dark Character Generator Web
 
-ブラウザ上で「闇堕ちキャラクター」の設定を組み立て、生成 AI でプロットを作るシングルページアプリです。世界観や闇堕ち度合い、各種属性を入力・選択して生成を実行すると、結果と実際に使われたプロンプトを確認できます。デモでは Cloudflare Workers AI（`@cf/openai/gpt-oss-20b`）を経由して生成します。
+ブラウザ上で「闇堕ちキャラクター」の設定を組み立て、生成 AI でプロットを作るシングルページアプリです。世界観や闇堕ち度合い、各種属性を入力・選択して生成を実行すると、結果と実際に使われたプロンプトを確認できます。デモでは Cloudflare Workers AI を利用し、環境変数でモデル ID を差し替えられます（未設定時は `@cf/openai/gpt-oss-20b`）。
 
 > 本アプリの実装は、ほとんどを AI コーディングで生成しています。
 
@@ -12,7 +12,7 @@
 ## 技術スタック
 - フロントエンド: Vite + React + TypeScript。UI はシングルページで動作します。
 - 配信/バックエンド: Cloudflare Pages を前提に、Pages Functions（`functions/api/ai.ts`）で AI へのプロキシを実装。
-- 生成エンジン: デモモードで Cloudflare Workers AI（`@cf/openai/gpt-oss-20b`）。設定画面で OpenAI 等を選択できる拡張余地あり。
+- 生成エンジン: デモモードで Cloudflare Workers AI（デフォルトは `@cf/openai/gpt-oss-20b`、環境変数で上書き可）。設定画面で OpenAI 等を選択できる拡張余地あり。
 - 主要ライブラリ: React 18、TypeScript 5、Vite 5（`package.json` 参照）。
 
 ## WSL + VS Code 前提のローカル開発
@@ -37,11 +37,13 @@
 Pages Functions から Workers AI を呼び出すため、Cloudflare Pages のプロジェクト設定に以下を追加してください。ローカル開発でも `.env` に同じキーを置くと、Vite の開発サーバー経由で Functions を動かせます。
 - `CLOUDFLARE_ACCOUNT_ID` : Cloudflare アカウント ID
 - `CLOUDFLARE_API_TOKEN` : Workers AI を実行可能な API トークン
+- `DEMO_MODEL_ID` : デモで使用する Workers AI のモデル ID（省略時は `@cf/openai/gpt-oss-20b`）
 
 `.env` の例:
 ```bash
 CLOUDFLARE_ACCOUNT_ID=your-account-id
 CLOUDFLARE_API_TOKEN=your-api-token
+DEMO_MODEL_ID=@cf/openai/gpt-oss-20b
 ```
 
 ## ライセンス
