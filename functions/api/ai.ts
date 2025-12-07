@@ -2,9 +2,10 @@ export interface Env {
   CLOUDFLARE_ACCOUNT_ID: string;
   CLOUDFLARE_API_TOKEN: string;
   TURNSTILE_SECRET_KEY: string;
+  DEMO_MODEL_ID?: string;
 }
 
-const CLOUD_FLARE_MODEL = '@cf/openai/gpt-oss-20b';
+const DEFAULT_DEMO_MODEL = '@cf/openai/gpt-oss-20b';
 
 const buildErrorResponse = (message: string, status = 500) =>
   new Response(JSON.stringify({ error: message }), {
@@ -73,7 +74,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return buildErrorResponse('Cloudflare API token is not configured.');
   }
 
-  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${CLOUD_FLARE_MODEL}`;
+  const modelId = env.DEMO_MODEL_ID?.trim() || DEFAULT_DEMO_MODEL;
+
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${modelId}`;
 
   const cfResponse = await fetch(url, {
     method: 'POST',
