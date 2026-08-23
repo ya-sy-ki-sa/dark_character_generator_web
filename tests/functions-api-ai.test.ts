@@ -243,14 +243,14 @@ describe('POST /api/ai', () => {
     expect(turnstileBody.get('remoteip')).toBe('203.0.113.10');
 
     expect(fetchMock.mock.calls[1]).toEqual([
-      'https://api.cloudflare.com/client/v4/accounts/test-account-id/ai/run/@cf/openai/gpt-oss-20b',
+      'https://api.cloudflare.com/client/v4/accounts/test-account-id/ai/run/@cf/qwen/qwen3.8-27b',
       expect.objectContaining({
         method: 'POST',
         headers: {
           Authorization: 'Bearer test-api-token',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ input: 'テスト用プロンプト' }),
+        body: JSON.stringify({ prompt: 'テスト用プロンプト' }),
       }),
     ]);
   });

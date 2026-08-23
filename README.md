@@ -1,6 +1,6 @@
 # Dark Character Generator Web
 
-ブラウザ上で「闇堕ちキャラクター」の設定を組み立て、生成 AI でショートストーリーを作るシングルページアプリです。世界観や闇堕ち度合い、各種属性を入力・選択して生成を実行すると、結果と実際に使われたプロンプトを確認できます。デモ生成には Cloudflare Pages Functions 経由の Workers AI を使用し、環境変数でモデル ID を差し替えられます（未設定時は `@cf/openai/gpt-oss-20b`）。
+ブラウザ上で「闇堕ちキャラクター」の設定を組み立て、生成 AI でショートストーリーを作るシングルページアプリです。世界観や闇堕ち度合い、各種属性を入力・選択して生成を実行すると、結果と実際に使われたプロンプトを確認できます。デモ生成には Cloudflare Pages Functions 経由の Workers AI を使用し、環境変数でモデル ID を差し替えられます（未設定時は `@cf/qwen/qwen3.8-27b`）。
 
 > 本アプリの実装は、ほとんどを AI コーディングで生成しています。
 
@@ -18,7 +18,7 @@
 - Oxlint 1.79.0 / Oxfmt 0.64.0
 - Vitest 4.1.11
 - Cloudflare Pages Functions / Wrangler 4.125.0
-- Cloudflare Workers AI `@cf/openai/gpt-oss-20b`
+- Cloudflare Workers AI `@cf/qwen/qwen3.8-27b`
 
 TypeScript 7 は正式版ですが、compiler API をまだ同梱せず周辺ツールの対応途上です。このプロジェクトでは、現行の Vite React 公式テンプレートと互換性のある TypeScript 6 系の最新パッチを採用しています。
 
@@ -62,7 +62,7 @@ npm run dev:pages
 CLOUDFLARE_ACCOUNT_ID=your-account-id
 CLOUDFLARE_API_TOKEN=your-api-token
 TURNSTILE_SECRET_KEY=your-turnstile-secret-key
-DEMO_MODEL_ID=@cf/openai/gpt-oss-20b
+DEMO_MODEL_ID=@cf/qwen/qwen3.8-27b
 ```
 
 Turnstile のサイトキーは Vite のビルド時に必要なため、ローカルでは `.env.local` に設定します。
@@ -80,7 +80,7 @@ Pages の production / preview 環境には次を設定します。
 - `CLOUDFLARE_ACCOUNT_ID`: Cloudflare アカウント ID
 - `CLOUDFLARE_API_TOKEN`: Workers AI を実行できる暗号化 Secret
 - `TURNSTILE_SECRET_KEY`: Turnstile ウィジェットを検証する暗号化 Secret
-- `DEMO_MODEL_ID`: デモで使用する Workers AI のモデル ID（省略時は `@cf/openai/gpt-oss-20b`）
+- `DEMO_MODEL_ID`: デモで使用する Workers AI のモデル ID（省略時は `@cf/qwen/qwen3.8-27b`）
 
 フロントエンドのビルド環境には `VITE_TURNSTILE_SITE_KEY` も設定してください。
 

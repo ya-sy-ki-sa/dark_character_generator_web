@@ -5,7 +5,7 @@ export interface Env {
   DEMO_MODEL_ID?: string;
 }
 
-const DEFAULT_DEMO_MODEL = '@cf/openai/gpt-oss-20b';
+const DEFAULT_DEMO_MODEL = '@cf/qwen/qwen3.8-27b';
 const MAX_REQUEST_BYTES = 64 * 1024;
 const MAX_PROMPT_CHARS = 16_000;
 const MAX_OUTPUT_CHARS = 8_000;
@@ -196,7 +196,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         Authorization: `Bearer ${apiToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ input: prompt }),
+      body: JSON.stringify({ prompt }),
     });
   } catch (error) {
     console.error('Cloudflare AI request failed.', {
