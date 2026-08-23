@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import { PROVIDERS } from '../constants';
-import { ProviderConfig, ProviderType } from '../types';
+import type { ProviderConfig, ProviderType } from '../types';
 import { Modal } from './Modal';
 
 interface ProviderSettingsModalProps {
@@ -25,7 +25,7 @@ export function ProviderSettingsModal({
   return (
     <Modal onClose={onClose}>
       <h2>AI プロバイダ設定</h2>
-      <p className="hint">ブラウザに設定を保存する場合、API キーの管理に注意してください。</p>
+      <p className="hint">プロバイダ種別とモデル名は保存できますが、API キーは保存されません。</p>
       <p className="hint">
         デモモードでは、Cloudflare Workers AIを利用します。無料枠上限に達している場合は、生成されません。
       </p>
@@ -80,7 +80,7 @@ export function ProviderSettingsModal({
             checked={persistSetting}
             onChange={(event) => onChangePersist(event.target.checked)}
           />
-          <span>ブラウザに設定を保存する</span>
+          <span>プロバイダ種別とモデル名を保存する</span>
         </label>
         <button className="ghost" type="button" onClick={onClear}>
           クリア

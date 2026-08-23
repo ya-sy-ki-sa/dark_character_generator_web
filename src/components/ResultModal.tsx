@@ -1,4 +1,4 @@
-import { GenerationResponse } from '../types';
+import type { GenerationResponse } from '../types';
 import { Modal } from './Modal';
 
 interface ResultModalProps {

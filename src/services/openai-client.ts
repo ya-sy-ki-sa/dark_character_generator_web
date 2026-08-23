@@ -1,4 +1,4 @@
-import { ProviderConfig } from '../types';
+import type { ProviderConfig } from '../types';
 
 type OpenAIMessage = {
   role: 'user' | 'assistant' | 'system';
@@ -10,6 +10,8 @@ type OpenAIResponse = {
     message?: OpenAIMessage;
   }[];
 };
+
+const MAX_OUTPUT_TOKENS = 2048;
 
 export const callOpenAI = async (prompt: string, providerConfig: ProviderConfig): Promise<string> => {
   const apiKey = providerConfig.apiKey?.trim();
@@ -33,6 +35,7 @@ export const callOpenAI = async (prompt: string, providerConfig: ProviderConfig)
           content: prompt,
         },
       ],
+      max_completion_tokens: MAX_OUTPUT_TOKENS,
     }),
   });
 

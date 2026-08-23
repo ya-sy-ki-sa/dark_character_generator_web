@@ -1,4 +1,4 @@
-import {
+import type {
   AttributeCategory,
   AttributeOption,
   CharacterInput,
@@ -243,7 +243,7 @@ export const generateCharacter = async (
       try {
         narrative = await callOpenAI(prompt, providerConfig);
         usedProvider = true;
-      } catch (error) {
+      } catch {
         warning = "OpenAI 生成に失敗したため選択内容のみ表示します。";
         narrative = fallbackNarrative;
       }
@@ -252,9 +252,9 @@ export const generateCharacter = async (
     }
   } else if (providerConfig.providerType === "DEMO") {
     try {
-      narrative = await callCloudflareAI(prompt, providerConfig);
+      narrative = await callCloudflareAI(prompt);
       usedProvider = true;
-    } catch (error) {
+    } catch {
       warning = demoWarning;
       narrative = fallbackNarrative;
     }

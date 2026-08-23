@@ -1,81 +1,174 @@
 export interface Env {
-  CLOUDFLARE_ACCOUNT_ID: string;
-  CLOUDFLARE_API_TOKEN: string;
+  CLOUDFLARE_ACCOUNT_ID?: string;
+  CLOUDFLARE_API_TOKEN?: string;
 }
 
-const CLOUD_FLARE_MODEL = '@cf/openai/gpt-oss-20b';
+const CLOUDFLARE_MODEL = '@cf/openai/gpt-oss-20b';
+const MAX_REQUEST_BYTES = 64 * 1024;
+const MAX_PROMPT_CHARS = 16_000;
+const MAX_OUTPUT_TOKENS = 2048;
+const MAX_OUTPUT_CHARS = 8_000;
 
-const buildErrorResponse = (message: string, status = 500) =>
-  new Response(JSON.stringify({ error: message }), {
+const RESPONSE_HEADERS = {
+  'Cache-Control': 'no-store',
+  'Content-Type': 'application/json; charset=utf-8',
+  'X-Content-Type-Options': 'nosniff',
+};
+
+const buildJsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json' },
+    headers: RESPONSE_HEADERS,
   });
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const { request, env } = context;
+const buildErrorResponse = (message: string, status = 500) =>
+  buildJsonResponse({ error: message }, status);
 
-  let prompt = '';
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+const extractContentParts = (value: unknown): string => {
+  if (typeof value === 'string') return value;
+  if (!Array.isArray(value)) return '';
+
+  return value
+    .map((part) => {
+      if (!isRecord(part)) return '';
+      if (part.type !== 'output_text' && part.type !== 'text') return '';
+      return typeof part.text === 'string' ? part.text : '';
+    })
+    .join('');
+};
+
+const extractTextFromPayload = (payload: unknown): string => {
+  if (typeof payload === 'string') return payload.trim();
+  if (!isRecord(payload)) return '';
+
+  if (typeof payload.response === 'string') {
+    return payload.response.trim();
+  }
+
+  if (typeof payload.output_text === 'string') {
+    return payload.output_text.trim();
+  }
+
+  if (Array.isArray(payload.output)) {
+    const text = payload.output
+      .map((item) => (isRecord(item) ? extractContentParts(item.content) : ''))
+      .join('')
+      .trim();
+    if (text) return text;
+  }
+
+  if (Array.isArray(payload.choices)) {
+    const firstChoice = payload.choices[0];
+    const message = isRecord(firstChoice) ? firstChoice.message : undefined;
+    const content = isRecord(message) ? message.content : undefined;
+    return extractContentParts(content).trim();
+  }
+
+  return '';
+};
+
+const extractGeneratedText = (data: unknown): string => {
+  if (!isRecord(data)) return '';
+  return extractTextFromPayload(data.result) || extractTextFromPayload(data);
+};
+
+export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  const contentType = request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase();
+  if (contentType !== 'application/json') {
+    return buildErrorResponse('Content-Type must be application/json.', 415);
+  }
+
+  const declaredLength = Number(request.headers.get('Content-Length') ?? 0);
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_REQUEST_BYTES) {
+    return buildErrorResponse('Request body is too large.', 413);
+  }
+
+  let rawBody = '';
   try {
-    const body = await request.json();
-    if (body && typeof body.prompt === 'string') {
-      prompt = body.prompt;
-    }
-  } catch (error) {
-    console.error('Failed to parse request body', error);
+    rawBody = await request.text();
+  } catch {
+    return buildErrorResponse('Failed to read request body.', 400);
+  }
+
+  if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {
+    return buildErrorResponse('Request body is too large.', 413);
+  }
+
+  let body: unknown;
+  try {
+    body = JSON.parse(rawBody);
+  } catch {
     return buildErrorResponse('Invalid JSON body.', 400);
   }
 
-  if (!prompt.trim()) {
+  const prompt = isRecord(body) && typeof body.prompt === 'string' ? body.prompt.trim() : '';
+  if (!prompt) {
     return buildErrorResponse('Prompt is required.', 400);
+  }
+  if (prompt.length > MAX_PROMPT_CHARS) {
+    return buildErrorResponse('Prompt is too long.', 413);
   }
 
   const accountId = env.CLOUDFLARE_ACCOUNT_ID?.trim();
   if (!accountId) {
     console.error('CLOUDFLARE_ACCOUNT_ID is missing.');
-    return buildErrorResponse('Cloudflare account ID is not configured.');
+    return buildErrorResponse('AI provider is not configured.');
   }
 
   const apiToken = env.CLOUDFLARE_API_TOKEN?.trim();
   if (!apiToken) {
     console.error('CLOUDFLARE_API_TOKEN is missing.');
-    return buildErrorResponse('Cloudflare API token is not configured.');
+    return buildErrorResponse('AI provider is not configured.');
   }
 
-  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${CLOUD_FLARE_MODEL}`;
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${CLOUDFLARE_MODEL}`;
 
-  const cfResponse = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      // Workers AI の openai/gpt 系モデルは `input` を受け取るシンプルな形式のみをサポートする。
-      // `messages` を渡すと Cloudflare 側で oneOf バリデーションエラーとなるため、
-      // プロンプト文字列をそのまま input に設定する。
-      input: prompt,
-    }),
-  });
-
-  const contentType = cfResponse.headers.get('Content-Type');
-
-  if (!cfResponse.ok) {
-    const errorText = await cfResponse.text().catch(() => '');
-    const message = errorText || cfResponse.statusText || 'Unknown error';
-    return buildErrorResponse(`Cloudflare AI API error: ${message}`, cfResponse.status);
-  }
-
-  if (contentType?.includes('application/json')) {
-    const data = await cfResponse.json();
-    return new Response(JSON.stringify(data), {
-      status: cfResponse.status,
-      headers: { 'Content-Type': 'application/json' },
+  let cloudflareResponse: Response;
+  try {
+    cloudflareResponse = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: MAX_OUTPUT_TOKENS,
+      }),
     });
+  } catch (error) {
+    console.error('Cloudflare AI request failed.', {
+      error: error instanceof Error ? error.name : 'UnknownError',
+    });
+    return buildErrorResponse('AI generation failed.', 502);
   }
 
-  const fallbackText = await cfResponse.text().catch(() => '');
-  return new Response(JSON.stringify({ result: fallbackText }), {
-    status: cfResponse.status,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  if (!cloudflareResponse.ok) {
+    console.error('Cloudflare AI returned an error.', {
+      status: cloudflareResponse.status,
+      rayId: cloudflareResponse.headers.get('cf-ray'),
+    });
+    return buildErrorResponse('AI generation failed.', 502);
+  }
+
+  let data: unknown;
+  try {
+    data = await cloudflareResponse.json();
+  } catch {
+    console.error('Cloudflare AI returned invalid JSON.');
+    return buildErrorResponse('AI generation failed.', 502);
+  }
+
+  const generatedText = extractGeneratedText(data);
+  if (!generatedText || generatedText.length > MAX_OUTPUT_CHARS) {
+    console.error('Cloudflare AI returned invalid output.', {
+      outputLength: generatedText.length,
+    });
+    return buildErrorResponse('AI generation failed.', 502);
+  }
+
+  return buildJsonResponse({ text: generatedText });
 };

@@ -19,7 +19,7 @@ import { ProviderSettingsModal } from './components/ProviderSettingsModal';
 import { ResultModal } from './components/ResultModal';
 import { useProviderSettings } from './hooks/useProviderSettings';
 import { generateCharacter } from './services/generator';
-import {
+import type {
   AttributeCategory,
   AttributeOption,
   CharacterInput,

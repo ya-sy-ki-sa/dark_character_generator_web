@@ -3,24 +3,43 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=11.17.0"
+  },
+  "packageManager": "npm@11.17.0",
+  "allowScripts": {
+    "esbuild": true,
+    "fsevents@2.3.3": true,
+    "workerd": true
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "dev:pages": "npm run build && wrangler pages dev dist --compatibility-date 2026-08-23",
+    "build": "npm run typecheck && vite build",
+    "build:functions": "wrangler pages functions build functions --outdir .wrangler/functions-build --compatibility-date 2026-08-23",
     "preview": "vite preview",
-    "lint": "tsc --noEmit"
+    "typecheck": "npm run typecheck:app && npm run typecheck:config && npm run typecheck:functions",
+    "typecheck:app": "tsc --noEmit --project tsconfig.json",
+    "typecheck:config": "tsc --noEmit --project tsconfig.node.json",
+    "typecheck:functions": "tsc --noEmit --project functions/tsconfig.json",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "check": "npm run lint && npm run build && npm run build:functions"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@types/react": "^18.2.38",
-    "@types/react-dom": "^18.2.15",
-    "@vitejs/plugin-react": "^4.3.0",
-    "eslint": "^8.56.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.6",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.0"
+    "@cloudflare/workers-types": "5.20260823.1",
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.1.0",
+    "oxlint": "1.79.0",
+    "typescript": "6.0.3",
+    "vite": "8.2.2",
+    "wrangler": "4.125.0"
   }
 }

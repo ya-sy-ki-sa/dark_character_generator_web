@@ -9,7 +9,7 @@ interface LibraryLicense {
 
 const MIT_NOTICE = `MIT License
 
-Copyright (c) Facebook, Inc. and its affiliates.
+Copyright (c) Meta Platforms, Inc. and affiliates.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ SOFTWARE.`;
 export const LIBRARY_LICENSES: LibraryLicense[] = [
   {
     name: 'React',
-    version: '18.2.0',
+    version: '19.2.8',
     license: 'MIT License',
     text: MIT_NOTICE,
     obligation: 'MIT ライセンスのため、著作権表示および本許諾表示の保持が必要です。',
@@ -40,7 +40,7 @@ export const LIBRARY_LICENSES: LibraryLicense[] = [
   },
   {
     name: 'React DOM',
-    version: '18.2.0',
+    version: '19.2.8',
     license: 'MIT License',
     text: MIT_NOTICE,
     obligation: 'MIT ライセンスのため、著作権表示および本許諾表示の保持が必要です。',

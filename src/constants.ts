@@ -4,7 +4,7 @@ import mindsetOptions from "./data/attribute-options/mindset.json";
 import motiveOptions from "./data/attribute-options/motive.json";
 import transformationOptions from "./data/attribute-options/transformation-process.json";
 import worldGenresSeed from "./data/world-genres.json";
-import {
+import type {
   AttributeCategory,
   AttributeOption,
   DarknessPreset,
