@@ -48,7 +48,8 @@ function App() {
   const [traitMemo, setTraitMemo] = useState('');
   const [protagonistScore, setProtagonistScore] = useState<1 | 2 | 3 | 4 | 5>(3);
   const [darknessPresetValue, setDarknessPresetValue] = useState<DarknessPreset['value']>(100);
-  const [darknessSelections, setDarknessSelections] = useState<Record<AttributeCategory, string[]>>(createDefaultSelections);
+  const [darknessSelections, setDarknessSelections] =
+    useState<Record<AttributeCategory, string[]>>(createDefaultSelections);
   const [darknessMemo, setDarknessMemo] = useState('');
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
@@ -71,8 +72,10 @@ function App() {
   } = useProviderSettings();
 
   const currentPreset = useMemo(
-    () => DARKNESS_PRESETS.find((preset) => preset.value === darknessPresetValue) ?? DARKNESS_PRESETS[0],
-    [darknessPresetValue]
+    () =>
+      DARKNESS_PRESETS.find((preset) => preset.value === darknessPresetValue) ??
+      DARKNESS_PRESETS[0],
+    [darknessPresetValue],
   );
 
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim();
@@ -125,17 +128,21 @@ function App() {
 
   const protagonistAlignment = useMemo(
     () => ALIGNMENTS.find((item) => item.score === protagonistScore),
-    [protagonistScore]
+    [protagonistScore],
   );
 
   const updateTrait = (name: string) => {
-    setSelectedTraits((prev) => (prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]));
+    setSelectedTraits((prev) =>
+      prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name],
+    );
   };
 
   const toggleDarkness = (category: AttributeCategory, name: string) => {
     setDarknessSelections((prev) => {
       const previous = prev[category] ?? [];
-      const updated = previous.includes(name) ? previous.filter((item) => item !== name) : [...previous, name];
+      const updated = previous.includes(name)
+        ? previous.filter((item) => item !== name)
+        : [...previous, name];
       return { ...prev, [category]: updated };
     });
   };
@@ -148,7 +155,9 @@ function App() {
     if (!allowedValues.includes(darknessPresetValue)) {
       return '闇堕ち度は用意されたプリセットから選択してください。';
     }
-    const hasDarknessSelection = DARKNESS_CATEGORIES.some(({ key }) => (darknessSelections[key] ?? []).length > 0);
+    const hasDarknessSelection = DARKNESS_CATEGORIES.some(
+      ({ key }) => (darknessSelections[key] ?? []).length > 0,
+    );
     if (!hasDarknessSelection) {
       return '闇堕ちカテゴリから少なくとも1つは選択してください。';
     }
@@ -216,11 +225,17 @@ function App() {
 
     const traitSelections = TRAIT_OPTIONS.filter((trait) => selectedTraits.includes(trait.name));
     const darknessSelectionsResolved: Record<AttributeCategory, AttributeOption[]> = {
-      APPEARANCE: APPEARANCE_OPTIONS.filter((option) => darknessSelections.APPEARANCE.includes(option.name)),
-      CHARACTER_TRAIT: TRAIT_OPTIONS.filter((option) => darknessSelections.CHARACTER_TRAIT.includes(option.name)),
+      APPEARANCE: APPEARANCE_OPTIONS.filter((option) =>
+        darknessSelections.APPEARANCE.includes(option.name),
+      ),
+      CHARACTER_TRAIT: TRAIT_OPTIONS.filter((option) =>
+        darknessSelections.CHARACTER_TRAIT.includes(option.name),
+      ),
       MINDSET: MINDSET_OPTIONS.filter((option) => darknessSelections.MINDSET.includes(option.name)),
       MOTIVE: MOTIVE_OPTIONS.filter((option) => darknessSelections.MOTIVE.includes(option.name)),
-      TRANSFORMATION_PROCESS: TRANSFORMATION_OPTIONS.filter((option) => darknessSelections.TRANSFORMATION_PROCESS.includes(option.name)),
+      TRANSFORMATION_PROCESS: TRANSFORMATION_OPTIONS.filter((option) =>
+        darknessSelections.TRANSFORMATION_PROCESS.includes(option.name),
+      ),
     };
 
     const input: CharacterInput = {
@@ -275,7 +290,10 @@ function App() {
     setDarknessPresetValue(value);
   };
 
-  const totalSelections = Object.values(darknessSelections).reduce((acc, list) => acc + list.length, 0);
+  const totalSelections = Object.values(darknessSelections).reduce(
+    (acc, list) => acc + list.length,
+    0,
+  );
 
   return (
     <main className="app">
@@ -290,7 +308,11 @@ function App() {
             <button className="ghost" type="button" onClick={() => setIsSettingsOpen(true)}>
               ⚙️ プロバイダ設定
             </button>
-            <span className="pill inline">{providerConfig.providerType === 'DEMO' ? 'デモモード' : `${providerConfig.providerType} を使用`}</span>
+            <span className="pill inline">
+              {providerConfig.providerType === 'DEMO'
+                ? 'デモモード'
+                : `${providerConfig.providerType} を使用`}
+            </span>
           </div>
         </div>
         <div className="badge">Vite + React</div>
@@ -303,8 +325,10 @@ function App() {
         </div>
         <div className="field-grid">
           <div className="field">
-            <label className="label">モード</label>
-            <div className="inline-options">
+            <span className="label" id="mode-label">
+              モード
+            </span>
+            <div className="inline-options" role="radiogroup" aria-labelledby="mode-label">
               <label className="chip">
                 <input
                   type="radio"
@@ -346,14 +370,21 @@ function App() {
                 onChange={(event) => setWorldGenre(event.target.value)}
               />
               {worldGenre && (
-                <button className="clear-input" type="button" aria-label="世界観ジャンルをクリア" onClick={() => setWorldGenre('')}>
+                <button
+                  className="clear-input"
+                  type="button"
+                  aria-label="世界観ジャンルをクリア"
+                  onClick={() => setWorldGenre('')}
+                >
                   ×
                 </button>
               )}
             </div>
             <datalist id="world-genres">
               {WORLD_GENRES.map((genre) => (
-                <option key={genre.name} value={genre.name} />
+                <option key={genre.name} value={genre.name}>
+                  {genre.name}
+                </option>
               ))}
             </datalist>
             <p className="hint">候補から選ぶか、自由に入力できます。</p>
@@ -371,11 +402,15 @@ function App() {
                 max={5}
                 step={1}
                 value={protagonistScore}
-                onChange={(event) => setProtagonistScore(Number(event.target.value) as 1 | 2 | 3 | 4 | 5)}
+                onChange={(event) =>
+                  setProtagonistScore(Number(event.target.value) as 1 | 2 | 3 | 4 | 5)
+                }
               />
               <span className="pill">{protagonistScore}/5</span>
             </div>
-            <p className="hint">{protagonistAlignment?.preview ?? 'スライダーで立ち位置を選択してください。'}</p>
+            <p className="hint">
+              {protagonistAlignment?.preview ?? 'スライダーで立ち位置を選択してください。'}
+            </p>
           </div>
         </div>
       </section>
@@ -386,11 +421,15 @@ function App() {
           <p>キャラクターの素質を選び、メモを残せます。</p>
         </div>
         <div className="field">
-          <div className={`checkbox-grid ${mode === 'AUTO' ? 'disabled-block' : ''}`} aria-disabled={mode === 'AUTO'}>
+          <div
+            className={`checkbox-grid ${mode === 'AUTO' ? 'disabled-block' : ''}`}
+            aria-disabled={mode === 'AUTO'}
+          >
             {TRAIT_OPTIONS.map((trait) => (
               <label key={trait.name} className={`checkbox ${mode === 'AUTO' ? 'disabled' : ''}`}>
                 <input
                   type="checkbox"
+                  aria-label={`${trait.name}：${trait.description}`}
                   disabled={mode === 'AUTO'}
                   checked={selectedTraits.includes(trait.name)}
                   onChange={() => updateTrait(trait.name)}
@@ -433,6 +472,7 @@ function App() {
                   <label key={option.name} className="checkbox">
                     <input
                       type="checkbox"
+                      aria-label={`${option.name}：${option.description}`}
                       checked={(darknessSelections[key] ?? []).includes(option.name)}
                       onChange={() => toggleDarkness(key, option.name)}
                     />
@@ -459,7 +499,9 @@ function App() {
               max={250}
               step={50}
               value={darknessPresetValue}
-              onChange={(event) => resetDarkness(Number(event.target.value) as DarknessPreset['value'])}
+              onChange={(event) =>
+                resetDarkness(Number(event.target.value) as DarknessPreset['value'])
+              }
             />
             <span className="pill accent">{formatPreset(currentPreset)}</span>
           </div>
@@ -488,7 +530,12 @@ function App() {
           <span>選択済みカテゴリ: {totalSelections} 件</span>
           <span>闇堕ち度プリセット: {formatPreset(currentPreset)}</span>
         </div>
-        <button className="primary" type="button" onClick={handleGenerate} disabled={isGenerating || isVerifyingTurnstile}>
+        <button
+          className="primary"
+          type="button"
+          onClick={handleGenerate}
+          disabled={isGenerating || isVerifyingTurnstile}
+        >
           {isGenerating || isVerifyingTurnstile ? '生成中...' : '闇堕ち設定を生成する'}
         </button>
       </section>
@@ -500,7 +547,10 @@ function App() {
         </div>
         {response ? (
           <div className="preview">
-            <p className="meta">{response.usedProvider ? '設定されたプロバイダで生成' : 'デモ生成'} | {response.character.createdAt}</p>
+            <p className="meta">
+              {response.usedProvider ? '設定されたプロバイダで生成' : 'デモ生成'} |{' '}
+              {response.character.createdAt}
+            </p>
             <p className="meta">{response.warning ?? 'プロンプト生成済み'}</p>
             <div className="preview-actions">
               <button className="secondary" type="button" onClick={() => setIsResultOpen(true)}>
@@ -514,7 +564,9 @@ function App() {
             </div>
           </div>
         ) : (
-          <p className="placeholder">設定を入力して「生成」ボタンを押すと、ここに最新結果の要約が表示されます。</p>
+          <p className="placeholder">
+            設定を入力して「生成」ボタンを押すと、ここに最新結果の要約が表示されます。
+          </p>
         )}
       </section>
 
@@ -549,7 +601,9 @@ function App() {
       {isUsageInfoOpen && <UsageInfoModal onClose={() => setIsUsageInfoOpen(false)} />}
 
       <footer className="app-footer">
-        <span className="footer-note">このアプリではオープンソースライブラリを利用しています。</span>
+        <span className="footer-note">
+          このアプリではオープンソースライブラリを利用しています。
+        </span>
         <div className="footer-actions">
           <button className="footer-link" type="button" onClick={() => setIsUsageInfoOpen(true)}>
             本サイトのご利用について
