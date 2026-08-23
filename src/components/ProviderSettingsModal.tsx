@@ -27,7 +27,8 @@ export function ProviderSettingsModal({
       <h2>AI プロバイダ設定</h2>
       <p className="hint">プロバイダ種別とモデル名は保存できますが、API キーは保存されません。</p>
       <p className="hint">
-        デモモードでは、Cloudflare Workers AIを利用します。無料枠上限に達している場合は、生成されません。
+        デモモードでは、Cloudflare Workers
+        AIを利用します。無料枠上限に達している場合は、生成されません。
       </p>
       <div className="field">
         <label className="label" htmlFor="provider">
@@ -38,7 +39,10 @@ export function ProviderSettingsModal({
           className="input"
           value={providerConfig.providerType}
           onChange={(event) =>
-            onChangeProviderConfig((prev) => ({ ...prev, providerType: event.target.value as ProviderType }))
+            onChangeProviderConfig((prev) => ({
+              ...prev,
+              providerType: event.target.value as ProviderType,
+            }))
           }
         >
           {PROVIDERS.map((provider) => (
@@ -58,7 +62,9 @@ export function ProviderSettingsModal({
           type="password"
           placeholder="未入力の場合はデモモードで生成"
           value={providerConfig.apiKey ?? ''}
-          onChange={(event) => onChangeProviderConfig((prev) => ({ ...prev, apiKey: event.target.value }))}
+          onChange={(event) =>
+            onChangeProviderConfig((prev) => ({ ...prev, apiKey: event.target.value }))
+          }
         />
       </div>
       <div className="field">
@@ -70,7 +76,9 @@ export function ProviderSettingsModal({
           className="input"
           placeholder="例: gpt-4o-mini"
           value={providerConfig.model ?? ''}
-          onChange={(event) => onChangeProviderConfig((prev) => ({ ...prev, model: event.target.value }))}
+          onChange={(event) =>
+            onChangeProviderConfig((prev) => ({ ...prev, model: event.target.value }))
+          }
         />
       </div>
       <div className="field inline-row">

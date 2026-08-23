@@ -52,7 +52,7 @@ export function useProviderSettings() {
         JSON.stringify({
           providerType: providerConfig.providerType,
           model: providerConfig.model ?? '',
-        })
+        }),
       );
     } else {
       localStorage.removeItem(LOCAL_STORAGE_KEY);

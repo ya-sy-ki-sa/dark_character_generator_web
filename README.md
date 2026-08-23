@@ -89,17 +89,17 @@ Pages の production / preview 環境には次を設定します。
 
 ## 開発コマンド
 
-| コマンド | 内容 |
-| --- | --- |
-| `npm run dev` | Vite 開発サーバーを起動 |
-| `npm run dev:pages` | ビルド後に Pages Functions を含めて起動 |
-| `npm run lint` | Oxlint を実行 |
-| `npm run lint:fix` | 自動修正可能な lint 違反を修正 |
-| `npm run typecheck` | フロント、Vite 設定、Pages Functions を型チェック |
-| `npm run build` | 全型チェック後に本番ビルド |
-| `npm run build:functions` | Wrangler で Pages Functions をバンドル検証 |
-| `npm run check` | lint・型チェック・フロント / Functions のビルドを一括実行 |
-| `npm run preview` | 本番ビルドを Vite でプレビュー |
+| コマンド                  | 内容                                                      |
+| ------------------------- | --------------------------------------------------------- |
+| `npm run dev`             | Vite 開発サーバーを起動                                   |
+| `npm run dev:pages`       | ビルド後に Pages Functions を含めて起動                   |
+| `npm run lint`            | Oxlint を実行                                             |
+| `npm run lint:fix`        | 自動修正可能な lint 違反を修正                            |
+| `npm run typecheck`       | フロント、Vite 設定、Pages Functions を型チェック         |
+| `npm run build`           | 全型チェック後に本番ビルド                                |
+| `npm run build:functions` | Wrangler で Pages Functions をバンドル検証                |
+| `npm run check`           | lint・型チェック・フロント / Functions のビルドを一括実行 |
+| `npm run preview`         | 本番ビルドを Vite でプレビュー                            |
 
 GitHub Actions でも Node.js 24 と `npm ci` を使い、`npm run check` と依存関係監査を実行します。Dependabot は npm パッケージと GitHub Actions の更新を毎週確認します。
 

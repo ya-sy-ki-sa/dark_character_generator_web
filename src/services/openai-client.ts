@@ -13,7 +13,10 @@ type OpenAIResponse = {
 
 const MAX_OUTPUT_TOKENS = 2048;
 
-export const callOpenAI = async (prompt: string, providerConfig: ProviderConfig): Promise<string> => {
+export const callOpenAI = async (
+  prompt: string,
+  providerConfig: ProviderConfig,
+): Promise<string> => {
   const apiKey = providerConfig.apiKey?.trim();
   if (!apiKey) {
     throw new Error('OpenAI API key is missing.');
@@ -44,7 +47,7 @@ export const callOpenAI = async (prompt: string, providerConfig: ProviderConfig)
     throw new Error(
       `OpenAI API error: ${response.status} ${response.statusText}${
         errorText ? ` - ${errorText}` : ''
-      }`
+      }`,
     );
   }
 

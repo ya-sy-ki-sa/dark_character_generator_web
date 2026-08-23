@@ -79,7 +79,7 @@ const extractGeneratedText = (data: unknown): string => {
 const verifyTurnstile = async (
   token: string,
   secret: string,
-  remoteIp: string
+  remoteIp: string,
 ): Promise<boolean> => {
   try {
     const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
@@ -167,7 +167,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const isHuman = await verifyTurnstile(
     turnstileToken,
     turnstileSecret,
-    request.headers.get('CF-Connecting-IP') ?? ''
+    request.headers.get('CF-Connecting-IP') ?? '',
   );
   if (!isHuman) {
     return buildErrorResponse('Failed bot verification.', 403);

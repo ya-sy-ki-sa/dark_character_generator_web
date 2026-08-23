@@ -4,7 +4,7 @@ type CloudflareResponse = {
 
 export const callCloudflareAI = async (
   prompt: string,
-  turnstileToken?: string
+  turnstileToken?: string,
 ): Promise<string> => {
   const response = await fetch('/api/ai', {
     method: 'POST',
