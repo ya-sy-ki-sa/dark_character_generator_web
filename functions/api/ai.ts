@@ -1,12 +1,13 @@
 export interface Env {
   CLOUDFLARE_ACCOUNT_ID?: string;
   CLOUDFLARE_API_TOKEN?: string;
+  TURNSTILE_SECRET_KEY?: string;
+  DEMO_MODEL_ID?: string;
 }
 
-const CLOUDFLARE_MODEL = '@cf/openai/gpt-oss-20b';
+const DEFAULT_DEMO_MODEL = '@cf/openai/gpt-oss-20b';
 const MAX_REQUEST_BYTES = 64 * 1024;
 const MAX_PROMPT_CHARS = 16_000;
-const MAX_OUTPUT_TOKENS = 2048;
 const MAX_OUTPUT_CHARS = 8_000;
 
 const RESPONSE_HEADERS = {
@@ -75,6 +76,45 @@ const extractGeneratedText = (data: unknown): string => {
   return extractTextFromPayload(data.result) || extractTextFromPayload(data);
 };
 
+const verifyTurnstile = async (
+  token: string,
+  secret: string,
+  remoteIp: string
+): Promise<boolean> => {
+  try {
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: new URLSearchParams({
+        secret,
+        response: token,
+        remoteip: remoteIp,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Turnstile verification returned an error.', {
+        status: response.status,
+      });
+      return false;
+    }
+
+    const result: unknown = await response.json();
+    if (!isRecord(result) || result.success !== true) {
+      console.error('Turnstile verification failed.', {
+        errorCodes: isRecord(result) ? result['error-codes'] : undefined,
+      });
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Turnstile verification request failed.', {
+      error: error instanceof Error ? error.name : 'UnknownError',
+    });
+    return false;
+  }
+};
+
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const contentType = request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase();
   if (contentType !== 'application/json') {
@@ -112,6 +152,27 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return buildErrorResponse('Prompt is too long.', 413);
   }
 
+  const turnstileToken =
+    isRecord(body) && typeof body.turnstileToken === 'string' ? body.turnstileToken.trim() : '';
+  if (!turnstileToken) {
+    return buildErrorResponse('Turnstile token is required.', 400);
+  }
+
+  const turnstileSecret = env.TURNSTILE_SECRET_KEY?.trim();
+  if (!turnstileSecret) {
+    console.error('TURNSTILE_SECRET_KEY is missing.');
+    return buildErrorResponse('Bot verification is not configured.');
+  }
+
+  const isHuman = await verifyTurnstile(
+    turnstileToken,
+    turnstileSecret,
+    request.headers.get('CF-Connecting-IP') ?? ''
+  );
+  if (!isHuman) {
+    return buildErrorResponse('Failed bot verification.', 403);
+  }
+
   const accountId = env.CLOUDFLARE_ACCOUNT_ID?.trim();
   if (!accountId) {
     console.error('CLOUDFLARE_ACCOUNT_ID is missing.');
@@ -124,7 +185,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return buildErrorResponse('AI provider is not configured.');
   }
 
-  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${CLOUDFLARE_MODEL}`;
+  const modelId = env.DEMO_MODEL_ID?.trim() || DEFAULT_DEMO_MODEL;
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${modelId}`;
 
   let cloudflareResponse: Response;
   try {
@@ -134,10 +196,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         Authorization: `Bearer ${apiToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: MAX_OUTPUT_TOKENS,
-      }),
+      body: JSON.stringify({ input: prompt }),
     });
   } catch (error) {
     console.error('Cloudflare AI request failed.', {
