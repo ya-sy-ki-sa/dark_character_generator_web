@@ -1,0 +1,61 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: ci (Node 24)",
+      "type": "shell",
+      "command": "source \"${env:HOME}/.nvm/nvm.sh\" && nvm use --silent && npm ci",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "shell": {
+          "executable": "/bin/bash",
+          "args": ["-lc"]
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "npm: dev (Node 24)",
+      "type": "shell",
+      "command": "source \"${env:HOME}/.nvm/nvm.sh\" && nvm use --silent && npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "shell": {
+          "executable": "/bin/bash",
+          "args": ["-lc"]
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "npm: dev:pages (Node 24)",
+      "type": "shell",
+      "command": "source \"${env:HOME}/.nvm/nvm.sh\" && nvm use --silent && npm run dev:pages",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "shell": {
+          "executable": "/bin/bash",
+          "args": ["-lc"]
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "npm: check (Node 24)",
+      "type": "shell",
+      "command": "source \"${env:HOME}/.nvm/nvm.sh\" && nvm use --silent && npm run check",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "shell": {
+          "executable": "/bin/bash",
+          "args": ["-lc"]
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
