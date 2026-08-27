@@ -169,11 +169,12 @@ describe('POST /api/ai', () => {
 
   it('AIプロバイダがHTTPエラーを返した場合は502を返す', async () => {
     fetchMock.mockReset();
-    fetchMock
-      .mockResolvedValueOnce(jsonResponse({ success: true }))
-      .mockResolvedValueOnce(
-        new Response('rate limited', { status: 429, headers: { 'cf-ray': 'test-ray' } }),
-      );
+    fetchMock.mockResolvedValueOnce(jsonResponse({ success: true })).mockResolvedValueOnce(
+      jsonResponse({ errors: [{ code: 3036, message: 'daily allocation exceeded' }] }, 429, {
+        'cf-ray': 'test-ray',
+        'retry-after': '60',
+      }),
+    );
 
     const response = await invoke(
       makeJsonRequest({ prompt: 'hello', turnstileToken: 'test-token' }),
@@ -182,6 +183,12 @@ describe('POST /api/ai', () => {
     expect(response.status).toBe(502);
     expect(await readJson(response)).toEqual({ error: 'AI generation failed.' });
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(console.error).toHaveBeenCalledWith('Cloudflare AI returned an error.', {
+      status: 429,
+      rayId: 'test-ray',
+      errorCodes: [3036],
+      retryAfter: '60',
+    });
   });
 
   it('AIプロバイダへの通信が失敗した場合は502を返す', async () => {
@@ -214,6 +221,46 @@ describe('POST /api/ai', () => {
 
     expect(response.status).toBe(502);
     expect(await readJson(response)).toEqual({ error: 'AI generation failed.' });
+  });
+
+  it('空回答の安全なレスポンス形式情報を記録する', async () => {
+    fetchMock.mockReset();
+    fetchMock.mockResolvedValueOnce(jsonResponse({ success: true })).mockResolvedValueOnce(
+      jsonResponse({
+        result: {
+          choices: [
+            {
+              finish_reason: 'stop',
+              message: { role: 'assistant', content: '', reasoning: 'internal reasoning' },
+            },
+          ],
+        },
+        success: true,
+      }),
+    );
+
+    const response = await invoke(
+      makeJsonRequest({ prompt: 'hello', turnstileToken: 'test-token' }),
+    );
+
+    expect(response.status).toBe(502);
+    expect(console.error).toHaveBeenCalledWith('Cloudflare AI returned invalid output.', {
+      outputLength: 0,
+      responseShape: {
+        topLevelKeys: ['result', 'success'],
+        payloadKeys: ['choices'],
+        responseType: 'undefined',
+        responseLength: undefined,
+        outputCount: 0,
+        choiceCount: 1,
+        finishReason: 'stop',
+        messageKeys: ['role', 'content', 'reasoning'],
+        contentType: 'string',
+        contentLength: 0,
+        reasoningType: 'string',
+        reasoningLength: 18,
+      },
+    });
   });
 
   it('Turnstile検証後にCloudflare AIの生成結果を安全なJSONとして返す', async () => {
@@ -250,7 +297,13 @@ describe('POST /api/ai', () => {
           Authorization: 'Bearer test-api-token',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: 'テスト用プロンプト' }),
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'テスト用プロンプト' }],
+          max_completion_tokens: 2048,
+          chat_template_kwargs: {
+            enable_thinking: false,
+          },
+        }),
       }),
     ]);
   });

@@ -6,6 +6,7 @@ export interface Env {
 }
 
 const DEFAULT_DEMO_MODEL = '@cf/qwen/qwen3.8-27b';
+const MAX_COMPLETION_TOKENS = 2_048;
 const MAX_REQUEST_BYTES = 64 * 1024;
 const MAX_PROMPT_CHARS = 16_000;
 const MAX_OUTPUT_CHARS = 8_000;
@@ -74,6 +75,43 @@ const extractTextFromPayload = (payload: unknown): string => {
 const extractGeneratedText = (data: unknown): string => {
   if (!isRecord(data)) return '';
   return extractTextFromPayload(data.result) || extractTextFromPayload(data);
+};
+
+const extractCloudflareErrorCodes = (data: unknown): Array<string | number> => {
+  if (!isRecord(data) || !Array.isArray(data.errors)) return [];
+
+  return data.errors
+    .map((error) => (isRecord(error) ? error.code : undefined))
+    .filter((code): code is string | number => typeof code === 'string' || typeof code === 'number')
+    .slice(0, 5);
+};
+
+const describeCloudflareResponse = (data: unknown) => {
+  const result = isRecord(data) ? data.result : undefined;
+  const payload = isRecord(result) ? result : data;
+  const choices = isRecord(payload) && Array.isArray(payload.choices) ? payload.choices : [];
+  const firstChoice = isRecord(choices[0]) ? choices[0] : undefined;
+  const message = isRecord(firstChoice?.message) ? firstChoice.message : undefined;
+  const content = message?.content;
+  const reasoning = message?.reasoning ?? message?.reasoning_content;
+
+  return {
+    topLevelKeys: isRecord(data) ? Object.keys(data).slice(0, 20) : [],
+    payloadKeys: isRecord(payload) ? Object.keys(payload).slice(0, 20) : [],
+    responseType: isRecord(payload) ? typeof payload.response : 'undefined',
+    responseLength:
+      isRecord(payload) && typeof payload.response === 'string'
+        ? payload.response.length
+        : undefined,
+    outputCount: isRecord(payload) && Array.isArray(payload.output) ? payload.output.length : 0,
+    choiceCount: choices.length,
+    finishReason: typeof firstChoice?.finish_reason === 'string' ? firstChoice.finish_reason : null,
+    messageKeys: message ? Object.keys(message).slice(0, 20) : [],
+    contentType: Array.isArray(content) ? 'array' : typeof content,
+    contentLength: typeof content === 'string' ? content.length : undefined,
+    reasoningType: Array.isArray(reasoning) ? 'array' : typeof reasoning,
+    reasoningLength: typeof reasoning === 'string' ? reasoning.length : undefined,
+  };
 };
 
 const verifyTurnstile = async (
@@ -196,7 +234,13 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         Authorization: `Bearer ${apiToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: prompt }],
+        max_completion_tokens: MAX_COMPLETION_TOKENS,
+        chat_template_kwargs: {
+          enable_thinking: false,
+        },
+      }),
     });
   } catch (error) {
     console.error('Cloudflare AI request failed.', {
@@ -206,9 +250,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   if (!cloudflareResponse.ok) {
+    let errorCodes: Array<string | number> = [];
+    try {
+      errorCodes = extractCloudflareErrorCodes(await cloudflareResponse.json());
+    } catch {
+      // The HTTP status and Ray ID still provide useful diagnostics when the body is not JSON.
+    }
+
     console.error('Cloudflare AI returned an error.', {
       status: cloudflareResponse.status,
       rayId: cloudflareResponse.headers.get('cf-ray'),
+      errorCodes,
+      retryAfter: cloudflareResponse.headers.get('retry-after'),
     });
     return buildErrorResponse('AI generation failed.', 502);
   }
@@ -225,6 +278,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!generatedText || generatedText.length > MAX_OUTPUT_CHARS) {
     console.error('Cloudflare AI returned invalid output.', {
       outputLength: generatedText.length,
+      responseShape: describeCloudflareResponse(data),
     });
     return buildErrorResponse('AI generation failed.', 502);
   }
