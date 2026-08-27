@@ -18,7 +18,7 @@
 - Oxlint 1.79.0 / Oxfmt 0.64.0
 - Vitest 4.1.11
 - Cloudflare Pages Functions / Wrangler 4.125.0
-- Cloudflare Workers AI `@cf/qwen/qwen3.8-27b`
+- Cloudflare Workers AI（Qwen 3.8 / OpenAI gpt-oss）
 
 TypeScript 7 は正式版ですが、compiler API をまだ同梱せず周辺ツールの対応途上です。このプロジェクトでは、現行の Vite React 公式テンプレートと互換性のある TypeScript 6 系の最新パッチを採用しています。
 
@@ -81,6 +81,16 @@ Pages の production / preview 環境には次を設定します。
 - `CLOUDFLARE_API_TOKEN`: Workers AI を実行できる暗号化 Secret
 - `TURNSTILE_SECRET_KEY`: Turnstile ウィジェットを検証する暗号化 Secret
 - `DEMO_MODEL_ID`: デモで使用する Workers AI のモデル ID（省略時は `@cf/qwen/qwen3.8-27b`）
+
+`DEMO_MODEL_ID` からリクエスト・レスポンス形式に対応するアダプターを自動選択します。
+
+| モデル ID                 | アダプター     |
+| ------------------------- | -------------- |
+| `@cf/qwen/qwen3.8-27b`    | Qwen 3.8       |
+| `@cf/openai/gpt-oss-20b`  | OpenAI gpt-oss |
+| `@cf/openai/gpt-oss-120b` | OpenAI gpt-oss |
+
+Qwen 3.8 系は `@cf/qwen/qwen3.8-`、OpenAI gpt-oss 系は `@cf/openai/gpt-oss-` で始まるモデル ID を認識します。未対応のモデル ID は、互換性のない形式で Workers AI を呼ばないよう設定エラーにします。
 
 フロントエンドのビルド環境には `VITE_TURNSTILE_SITE_KEY` も設定してください。
 

@@ -167,6 +167,23 @@ describe('POST /api/ai', () => {
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 
+  it('未対応のモデルIDを設定エラーとして扱う', async () => {
+    fetchMock.mockReset();
+    fetchMock.mockResolvedValueOnce(jsonResponse({ success: true }));
+
+    const response = await invoke(
+      makeJsonRequest({ prompt: 'hello', turnstileToken: 'test-token' }),
+      { ...configuredEnv, DEMO_MODEL_ID: '@cf/example/unsupported-model' },
+    );
+
+    expect(response.status).toBe(500);
+    expect(await readJson(response)).toEqual({ error: 'AI model is not supported.' });
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(console.error).toHaveBeenCalledWith('DEMO_MODEL_ID is not supported.', {
+      modelId: '@cf/example/unsupported-model',
+    });
+  });
+
   it('AIプロバイダがHTTPエラーを返した場合は502を返す', async () => {
     fetchMock.mockReset();
     fetchMock.mockResolvedValueOnce(jsonResponse({ success: true })).mockResolvedValueOnce(
@@ -207,8 +224,11 @@ describe('POST /api/ai', () => {
 
   it.each([
     ['invalid JSON', new Response('{', { status: 200 })],
-    ['empty output', jsonResponse({ result: { response: '   ' } })],
-    ['oversized output', jsonResponse({ result: { response: 'x'.repeat(8_001) } })],
+    ['empty output', jsonResponse({ result: { choices: [{ message: { content: '   ' } }] } })],
+    [
+      'oversized output',
+      jsonResponse({ result: { choices: [{ message: { content: 'x'.repeat(8_001) } }] } }),
+    ],
   ])('AIプロバイダの%sを502として扱う', async (_caseName, providerResponse) => {
     fetchMock.mockReset();
     fetchMock
@@ -265,9 +285,11 @@ describe('POST /api/ai', () => {
 
   it('Turnstile検証後にCloudflare AIの生成結果を安全なJSONとして返す', async () => {
     fetchMock.mockReset();
-    fetchMock
-      .mockResolvedValueOnce(jsonResponse({ success: true }))
-      .mockResolvedValueOnce(jsonResponse({ result: { response: '  生成された物語  ' } }));
+    fetchMock.mockResolvedValueOnce(jsonResponse({ success: true })).mockResolvedValueOnce(
+      jsonResponse({
+        result: { choices: [{ message: { content: '  生成された物語  ' } }] },
+      }),
+    );
 
     const response = await invoke(
       makeJsonRequest(
@@ -307,4 +329,32 @@ describe('POST /api/ai', () => {
       }),
     ]);
   });
+
+  it.each(['@cf/openai/gpt-oss-20b', '@cf/openai/gpt-oss-120b'])(
+    '%sではOpenAI gpt-oss形式を使用する',
+    async (modelId) => {
+      fetchMock.mockReset();
+      fetchMock
+        .mockResolvedValueOnce(jsonResponse({ success: true }))
+        .mockResolvedValueOnce(jsonResponse({ result: { response: '  gpt-ossの回答  ' } }));
+
+      const response = await invoke(
+        makeJsonRequest({ prompt: 'テスト用プロンプト', turnstileToken: 'test-token' }),
+        { ...configuredEnv, DEMO_MODEL_ID: modelId },
+      );
+
+      expect(response.status).toBe(200);
+      expect(await readJson(response)).toEqual({ text: 'gpt-ossの回答' });
+      expect(fetchMock.mock.calls[1]).toEqual([
+        `https://api.cloudflare.com/client/v4/accounts/test-account-id/ai/run/${modelId}`,
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: 'テスト用プロンプト' }],
+            max_tokens: 2048,
+          }),
+        }),
+      ]);
+    },
+  );
 });

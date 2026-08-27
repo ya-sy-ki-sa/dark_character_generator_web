@@ -1,3 +1,5 @@
+import { resolveCloudflareAiProvider } from '../lib/cloudflare-ai-providers';
+
 export interface Env {
   CLOUDFLARE_ACCOUNT_ID?: string;
   CLOUDFLARE_API_TOKEN?: string;
@@ -6,7 +8,6 @@ export interface Env {
 }
 
 const DEFAULT_DEMO_MODEL = '@cf/qwen/qwen3.8-27b';
-const MAX_COMPLETION_TOKENS = 2_048;
 const MAX_REQUEST_BYTES = 64 * 1024;
 const MAX_PROMPT_CHARS = 16_000;
 const MAX_OUTPUT_CHARS = 8_000;
@@ -28,54 +29,6 @@ const buildErrorResponse = (message: string, status = 500) =>
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-
-const extractContentParts = (value: unknown): string => {
-  if (typeof value === 'string') return value;
-  if (!Array.isArray(value)) return '';
-
-  return value
-    .map((part) => {
-      if (!isRecord(part)) return '';
-      if (part.type !== 'output_text' && part.type !== 'text') return '';
-      return typeof part.text === 'string' ? part.text : '';
-    })
-    .join('');
-};
-
-const extractTextFromPayload = (payload: unknown): string => {
-  if (typeof payload === 'string') return payload.trim();
-  if (!isRecord(payload)) return '';
-
-  if (typeof payload.response === 'string') {
-    return payload.response.trim();
-  }
-
-  if (typeof payload.output_text === 'string') {
-    return payload.output_text.trim();
-  }
-
-  if (Array.isArray(payload.output)) {
-    const text = payload.output
-      .map((item) => (isRecord(item) ? extractContentParts(item.content) : ''))
-      .join('')
-      .trim();
-    if (text) return text;
-  }
-
-  if (Array.isArray(payload.choices)) {
-    const firstChoice = payload.choices[0];
-    const message = isRecord(firstChoice) ? firstChoice.message : undefined;
-    const content = isRecord(message) ? message.content : undefined;
-    return extractContentParts(content).trim();
-  }
-
-  return '';
-};
-
-const extractGeneratedText = (data: unknown): string => {
-  if (!isRecord(data)) return '';
-  return extractTextFromPayload(data.result) || extractTextFromPayload(data);
-};
 
 const extractCloudflareErrorCodes = (data: unknown): Array<string | number> => {
   if (!isRecord(data) || !Array.isArray(data.errors)) return [];
@@ -224,6 +177,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   const modelId = env.DEMO_MODEL_ID?.trim() || DEFAULT_DEMO_MODEL;
+  const aiProvider = resolveCloudflareAiProvider(modelId);
+  if (!aiProvider) {
+    console.error('DEMO_MODEL_ID is not supported.', { modelId });
+    return buildErrorResponse('AI model is not supported.');
+  }
+
   const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${modelId}`;
 
   let cloudflareResponse: Response;
@@ -234,13 +193,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         Authorization: `Bearer ${apiToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        messages: [{ role: 'user', content: prompt }],
-        max_completion_tokens: MAX_COMPLETION_TOKENS,
-        chat_template_kwargs: {
-          enable_thinking: false,
-        },
-      }),
+      body: JSON.stringify(aiProvider.buildRequest(prompt)),
     });
   } catch (error) {
     console.error('Cloudflare AI request failed.', {
@@ -274,7 +227,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return buildErrorResponse('AI generation failed.', 502);
   }
 
-  const generatedText = extractGeneratedText(data);
+  const generatedText = aiProvider.extractText(data);
   if (!generatedText || generatedText.length > MAX_OUTPUT_CHARS) {
     console.error('Cloudflare AI returned invalid output.', {
       outputLength: generatedText.length,
