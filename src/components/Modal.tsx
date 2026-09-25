@@ -4,9 +4,10 @@ type ModalProps = {
   children: ReactNode;
   onClose: () => void;
   className?: string;
+  ariaLabel?: string;
 };
 
-export function Modal({ children, onClose, className }: ModalProps) {
+export function Modal({ children, onClose, className, ariaLabel = '詳細' }: ModalProps) {
   const modalClassName = className ? `modal ${className}` : 'modal';
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -28,7 +29,12 @@ export function Modal({ children, onClose, className }: ModalProps) {
 
   return (
     <div className="modal-backdrop">
-      <dialog ref={dialogRef} className={modalClassName} aria-label="詳細" onCancel={handleCancel}>
+      <dialog
+        ref={dialogRef}
+        className={modalClassName}
+        aria-label={ariaLabel}
+        onCancel={handleCancel}
+      >
         <button className="ghost close" onClick={onClose} aria-label="閉じる">
           ×
         </button>

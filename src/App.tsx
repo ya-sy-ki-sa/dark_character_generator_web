@@ -18,6 +18,7 @@ import { LicenseModal } from './components/LicenseModal';
 import { UsageInfoModal } from './components/UsageInfoModal';
 import { ProviderSettingsModal } from './components/ProviderSettingsModal';
 import { ResultModal } from './components/ResultModal';
+import { ClosureNoticeModal } from './components/ClosureNoticeModal';
 import { useProviderSettings } from './hooks/useProviderSettings';
 import { generateCharacter } from './services/generator';
 import type {
@@ -60,6 +61,7 @@ function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLicenseOpen, setIsLicenseOpen] = useState(false);
   const [isUsageInfoOpen, setIsUsageInfoOpen] = useState(false);
+  const [isClosureNoticeOpen, setIsClosureNoticeOpen] = useState(true);
   const [isVerifyingTurnstile, setIsVerifyingTurnstile] = useState(false);
   const [turnstileError, setTurnstileError] = useState('');
   const {
@@ -315,7 +317,16 @@ function App() {
             </span>
           </div>
         </div>
-        <div className="badge">Vite + React</div>
+        <div className="hero-side">
+          <button
+            className="notice-link"
+            type="button"
+            onClick={() => setIsClosureNoticeOpen(true)}
+          >
+            お知らせ
+          </button>
+          <div className="badge">Vite + React</div>
+        </div>
       </header>
 
       <section className="card">
@@ -599,6 +610,8 @@ function App() {
       {isLicenseOpen && <LicenseModal onClose={() => setIsLicenseOpen(false)} />}
 
       {isUsageInfoOpen && <UsageInfoModal onClose={() => setIsUsageInfoOpen(false)} />}
+
+      {isClosureNoticeOpen && <ClosureNoticeModal onClose={() => setIsClosureNoticeOpen(false)} />}
 
       <footer className="app-footer">
         <span className="footer-note">
